@@ -22,10 +22,18 @@ public class DigitalSignatureApplication {
 	@PostConstruct
 	public void init() {
 		System.out.println("Inside init().");
+		String signingString = "";
+
+		String requestTarget = "post /foo\n";
+		String host = "example.org\n";
+		String date = "Tue, 07 Jun 2014 20:51:35 GMT\n";
+		String contentLength = "18\n";
 		String payLoad = "{id=\"12345\", value=\"Hello\"}";
-		byte[] signature = digitalSignatureUtil.generate(payLoad);
-		String payLoad1 = "{id=\"12345\", value=\"Hello\"}";
-		digitalSignatureUtil.verify(payLoad1, signature);
+		signingString = requestTarget + host + date + contentLength + payLoad;
+
+		byte[] signature = digitalSignatureUtil.generate(signingString);
+		//String payLoad1 = "{id=\"12345\", value=\"Hello\"}";
+		digitalSignatureUtil.verify(signingString, signature);
 		System.out.println("Leaving init().");
 	}
 

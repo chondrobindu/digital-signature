@@ -10,7 +10,7 @@ import java.util.Base64;
 @Component
 public class DigitalSignatureUtil {
     public byte[] generate(String payload) {
-        System.out.println("creating signature for: " + payload);
+        System.out.println("creating signature for: \n" + payload);
         byte[] realSig = null;
         /* Generate a signature */
         try {
@@ -21,7 +21,6 @@ public class DigitalSignatureUtil {
             char [] ksPwd = "changeme".toCharArray();
             ks.load(ksbufin, ksPwd);
             PrivateKey privateKey = (PrivateKey) ks.getKey("signature", ksPwd);
-            Certificate cert = ks.getCertificate("signature");
 
             /* Create a Signature object and initialize it with the private key */
             Signature dsa = Signature.getInstance("SHA256withDSA", "SUN");
@@ -32,8 +31,9 @@ public class DigitalSignatureUtil {
             dsa.update(b);
             realSig = dsa.sign();
             byte[] encodedRealSig = Base64.getEncoder().encode(realSig);
+            //System.out.println(new String(realSig));
+            System.out.println("Base64 encoded signature: " + new String(encodedRealSig));
 
-            System.out.println("Signature created=" + encodedRealSig);
         } catch (Exception e) {
             System.err.println("Caught exception " + e.toString());
         }
