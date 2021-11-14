@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.spec.X509EncodedKeySpec;
 
 @Component
@@ -24,6 +25,15 @@ public class GenSig {
 
             keyGen.initialize(1024, random);
 
+            KeyStore ks = KeyStore.getInstance("JKS");
+            FileInputStream ksfis = new FileInputStream("apiProvider.jks");
+            BufferedInputStream ksbufin = new BufferedInputStream(ksfis);
+            char [] ksPwd = "changeme".toCharArray();
+            ks.load(ksbufin, ksPwd);
+            PrivateKey privateKey = (PrivateKey) ks.getKey("signature", ksPwd);
+            Certificate cert = ks.getCertificate("signature");
+            PublicKey publicKey = cert.getPublicKey();
+
             KeyPair pair = keyGen.generateKeyPair();
             PrivateKey priv = pair.getPrivate();
             PublicKey pub = pair.getPublic();
@@ -31,9 +41,9 @@ public class GenSig {
 
             /* Create a Signature object and initialize it with the private key */
 
-            Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
+            Signature dsa = Signature.getInstance("SHA256withDSA", "SUN");
 
-            dsa.initSign(priv);
+            dsa.initSign(privateKey);
 
 
             /* Now that all the data to be signed has been read in,
@@ -84,6 +94,15 @@ public class GenSig {
             KeyFactory keyFactory = KeyFactory.getInstance("DSA", "SUN");
             PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
 
+            KeyStore ks = KeyStore.getInstance("JKS");
+            FileInputStream ksfis = new FileInputStream("apiConsumer.jks");
+            BufferedInputStream ksbufin = new BufferedInputStream(ksfis);
+            char [] ksPwd = "changeme".toCharArray();
+            ks.load(ksbufin, ksPwd);
+            Certificate cert = ks.getCertificate("signature");
+            PublicKey publicKey = cert.getPublicKey();
+
+
             /* input the signature bytes */
             FileInputStream sigfis = new FileInputStream("sig");
             byte[] sigToVerify = new byte[sigfis.available()];
@@ -92,8 +111,8 @@ public class GenSig {
             sigfis.close();
 
             /* create a Signature object and initialize it with the public key */
-            Signature sig = Signature.getInstance("SHA1withDSA", "SUN");
-            sig.initVerify(pubKey);
+            Signature sig = Signature.getInstance("SHA256withDSA", "SUN");
+            sig.initVerify(publicKey);
 
             /* Update and verify the data
 
