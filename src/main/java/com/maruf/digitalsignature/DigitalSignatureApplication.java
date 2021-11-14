@@ -26,8 +26,8 @@ public class DigitalSignatureApplication {
 	public void init() {
 		System.out.println("Inside init().");
 		String payLoad = "{id=\"12345\", value=\"Hello\"}";
-		genSig.create(payLoad);
-		genSig.verify(payLoad);
+		byte[] signature = genSig.create(payLoad);
+		genSig.verify(payLoad, signature);
 		System.out.println("Leaving init().");
 	}
 
