@@ -1,14 +1,15 @@
-package com.maruf.digitalsignature.crypto;
+package com.maruf.Utils;
 
 import org.springframework.stereotype.Component;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.Certificate;
+import java.util.Base64;
 
 @Component
-public class GenSig {
-    public byte[] create(String payload) {
+public class DigitalSignatureUtil {
+    public byte[] generate(String payload) {
         System.out.println("creating signature for: " + payload);
         byte[] realSig = null;
         /* Generate a signature */
@@ -30,8 +31,9 @@ public class GenSig {
             byte[] b = payload.getBytes(StandardCharsets.UTF_8); // Java 7+ onl`
             dsa.update(b);
             realSig = dsa.sign();
+            byte[] encodedRealSig = Base64.getEncoder().encode(realSig);
 
-            System.out.println("Signature created=" + realSig.toString());
+            System.out.println("Signature created=" + encodedRealSig);
         } catch (Exception e) {
             System.err.println("Caught exception " + e.toString());
         }

@@ -1,12 +1,9 @@
-package com.maruf.digitalsignature;
+package com.maruf;
 
-import java.io.*;
-
-import com.maruf.digitalsignature.crypto.GenSig;
+import com.maruf.Utils.DigitalSignatureUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 import javax.annotation.PostConstruct;
 
@@ -15,7 +12,7 @@ import javax.annotation.PostConstruct;
 public class DigitalSignatureApplication {
 
 	@Autowired
-	private GenSig genSig;
+	private DigitalSignatureUtil digitalSignatureUtil;
 
 	public static void main(String[] args) {
 		SpringApplication.run(DigitalSignatureApplication.class, args);
@@ -26,8 +23,9 @@ public class DigitalSignatureApplication {
 	public void init() {
 		System.out.println("Inside init().");
 		String payLoad = "{id=\"12345\", value=\"Hello\"}";
-		byte[] signature = genSig.create(payLoad);
-		genSig.verify(payLoad, signature);
+		byte[] signature = digitalSignatureUtil.generate(payLoad);
+		String payLoad1 = "{id=\"12345\", value=\"Hello\"}";
+		digitalSignatureUtil.verify(payLoad1, signature);
 		System.out.println("Leaving init().");
 	}
 
