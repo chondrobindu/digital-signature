@@ -9,8 +9,8 @@ import java.util.Base64;
 
 @Component
 public class DigitalSignatureUtil {
-    public byte[] generate(String payload) {
-        System.out.println("creating signature for: \n" + payload);
+    public byte[] generate(String signingString) {
+        System.out.println("creating signature for: \n" + signingString);
         byte[] realSig = null;
         /* Generate a signature */
         try {
@@ -27,7 +27,7 @@ public class DigitalSignatureUtil {
             dsa.initSign(privateKey);
 
             /* generate a signature */
-            byte[] b = payload.getBytes(StandardCharsets.UTF_8); // Java 7+ onl`
+            byte[] b = signingString.getBytes(StandardCharsets.UTF_8); // Java 7+ onl`
             dsa.update(b);
             realSig = dsa.sign();
             byte[] encodedRealSig = Base64.getEncoder().encode(realSig);
@@ -40,7 +40,7 @@ public class DigitalSignatureUtil {
         return realSig;
     }
 
-    public static void verify(String payload, byte[] sigToVerify) {
+    public static void verify(String signingString, byte[] sigToVerify) {
         /* Verify a signature */
         try {
             /* import encoded public key from JKS */
@@ -56,7 +56,7 @@ public class DigitalSignatureUtil {
             Signature sig = Signature.getInstance("SHA256withDSA", "SUN");
             sig.initVerify(publicKey);
 
-            byte[] b = payload.getBytes(StandardCharsets.UTF_8); // Java 7+ onl`
+            byte[] b = signingString.getBytes(StandardCharsets.UTF_8); // Java 7+ onl`
             sig.update(b);
 
             boolean verifies = sig.verify(sigToVerify);

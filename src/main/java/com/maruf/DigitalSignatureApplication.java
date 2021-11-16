@@ -27,9 +27,16 @@ public class DigitalSignatureApplication {
 		String requestTarget = "post /foo\n";
 		String host = "example.org\n";
 		String date = "Tue, 07 Jun 2014 20:51:35 GMT\n";
-		String contentLength = "18\n";
+		String contentLength = "18\n"; // may be replaced with content-type
 		String payLoad = "{id=\"12345\", value=\"Hello\"}";
 		signingString = requestTarget + host + date + contentLength + payLoad;
+
+		/* Must have following headers:
+		 Date: Tue, 16 Nov 2021 01:47:34 GMT
+		 Signature: keyId="alias-of-the-private key",algorithm="rsa-sha256",
+		            headers="(request-target) host date content-length",
+		            signature="encoded signature"
+		 */
 
 		byte[] signature = digitalSignatureUtil.generate(signingString);
 		//String payLoad1 = "{id=\"12345\", value=\"Hello\"}";
